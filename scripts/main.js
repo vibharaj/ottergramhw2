@@ -1,23 +1,12 @@
+/*jslint browser:true*/
 var DETAIL_IMAGE_SELECTOR = '[data-image-role="target"]';
 var DETAIL_TITLE_SELECTOR = '[data-image-role="title"]';
 var DETAIL_FRAME_SELECTOR = '[data-image-role="frame"]';
-
 var THUMBNAIL_LINK_SELECTOR = '[data-image-role="trigger"]';
 var HIDDEN_DETAIL_CLASS = 'hidden-detail';
 var TINY_EFFECT_CLASS = 'is-tiny';
 var ESC_KEY = 27;
 var indexOfCurrentImage = 0;
-
-function showDetails() {
-    'use strict';
-    var frame = document.querySelector(DETAIL_FRAME_SELECTOR);
-    document.body.classList.remove(HIDDEN_DETAIL_CLASS);
-    frame.classList.add(TINY_EFFECT_CLASS);
-    setTimeout(function() {
-        frame.classList.remove(TINY_EFFECT_CLASS);
-    }, 50);
-    frame.classList.remove(TINY_EFFECT_CLASS);
-}
 
 function setDetails(imageUrl, titleText) {
     'use strict';
@@ -25,7 +14,7 @@ function setDetails(imageUrl, titleText) {
     detailImage.setAttribute('src', imageUrl);
 
     var detailTitle = document.querySelector(DETAIL_TITLE_SELECTOR);
-    detailTitle.textContext = titleText;
+    detailTitle.textContent = titleText;
 }
 
 function imageFromThumb(thumbnail) {
@@ -43,16 +32,20 @@ function setDetailsFromThumb(thumbnail) {
     setDetails(imageFromThumb(thumbnail), titleFromThumb(thumbnail));
 }
 
-function indexOfCurrentDisplay(newIndex) {
+function showDetails() {
     'use strict';
-    indexOfCurrentImage = newIndex;
+    var frame = document.querySelector(DETAIL_FRAME_SELECTOR);
+    document.body.classList.remove(HIDDEN_DETAIL_CLASS);
+    frame.classList.add(TINY_EFFECT_CLASS);
+    setTimeout(function () {
+        frame.classList.remove(TINY_EFFECT_CLASS);
+    }, 50);
 }
 
-function addThumbClickHandler(thumb, index) {
+function addThumbClickHandler(thumb) {
     'use strict';
-    thumb.addEventListener('click', function(event) {
+    thumb.addEventListener('click', function (event) {
         event.preventDefault();
-        indexOfCurrentDisplay(index);
         setDetailsFromThumb(thumb);
         showDetails();
     });
@@ -70,11 +63,6 @@ function hideDetails() {
     document.body.classList.add(HIDDEN_DETAIL_CLASS);
 }
 
-function showDetails() {
-    'use strict';
-    document.body.classList.remove(HIDDEN_DETAIL_CLASS);
-}
-
 function addKeyPressHandler() {
     'use strict';
     document.body.addEventListener('keyup', function (event) {
@@ -86,38 +74,41 @@ function addKeyPressHandler() {
     });
 }
 
-// *
-
-function addCycleImagesLeftHandler() {
+function indexOfCurrentDisplay(newIndex) {
     'use strict';
-    document.getElementById("cycleImagesLeftButton").addEventListener('click', function (event) {
+    indexOfCurrentImage = newIndex;
+}
+
+function addCycleLeftHandler() {
+    'use strict';
+    document.getElementById("cycleImageLeftButton").addEventListener('click', function (event) {
         event.preventDefault();
         var thumbnailArray = getThumbnailsArray();
-        var previousImageIndex;
+        var previousImage;
         if (indexOfCurrentImage === 0) {
-            previousImageIndex = thumbnailArray.length - 1;
+            previousImage = thumbnailArray.length - 1;
         } else {
-            previousImageIndex = (indexOfCurrentImage - 1) % thumbnailArray.length;
+            previousImage = (indexOfCurrentImage - 1) % thumbnailArray.length;
         }
-        indexOfCurrentDisplay(previousImageIndex);
-        setDetailsFromThumb(thumbnailArray[previousImageIndex]);
+        indexOfCurrentDisplay(previousImage);
+        setDetailsFromThumb(thumbnailArray[previousImage]);
         showDetails();
     });
 }
 
-function addCycleImagesRightHandler() {
+function addCycleRightHandler() {
     'use strict';
-    document.getElementById("cycleImagesRightButton").addEventListener('click', function (event) {
+    document.getElementById("cycleImageRightButton").addEventListener('click', function (event) {
         event.preventDefault();
         var thumbnailArray = getThumbnailsArray();
-        var nextImageIndex = indexOfCurrentImage;
+        var nextImage = indexOfCurrentImage;
         if (indexOfCurrentImage === 0) {
-            nextImageIndex = 1;
+            nextImage = 1;
         } else {
-            nextImageIndex = indexOfCurrentImage + 1;
+            nextImage = indexOfCurrentImage + 1;
         }
-        indexOfCurrentDisplay(nextImageIndex);
-        setDetailsFromThumb(thumbnailArray[nextImageIndex]);
+        indexOfCurrentDisplay(nextImage);
+        setDetailsFromThumb(thumbnailArray[nextImage]);
         showDetails();
     });
 }
@@ -126,8 +117,8 @@ function initializeEvents() {
     'use strict';
     var thumbnails = getThumbnailsArray();
     thumbnails.forEach(addThumbClickHandler);
-    addCycleImagesLeftHandler();
-    addCycleImagesRightHandler();
+    addCycleLeftHandler();
+    addCycleRightHandler();
     addKeyPressHandler();
 }
 
